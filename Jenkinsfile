@@ -39,6 +39,12 @@ pipeline {
             }
         }
 
+                stage('Publish Test Results') {
+            steps {
+                junit 'maven-samples/single-module/target/surefire-reports/*.xml'
+            }
+        }
+
         stage('Archive Artifact') {
             steps {
                 archiveArtifacts artifacts: 'maven-samples/single-module/target/*.jar', fingerprint: true
@@ -47,11 +53,22 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Build and Tests successful!'
-        }
         failure {
-            echo 'Build failed!'
+            emailext(
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                subject: " Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """Build failed for commit ${env.GIT_COMMIT}.
+                         <br>Check logs: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a>""",
+                mimeType: 'text/html'
+            )
+        }
+        success {
+            emailext(
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                subject: " Build Passed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Build passed successfully 🎉 <br>Details: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a>",
+                mimeType: 'text/html'
+            )
         }
     }
 }
