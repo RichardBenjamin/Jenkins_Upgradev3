@@ -77,7 +77,7 @@ pipeline {
                     from: 'jenkins@yourdomain.com'
                     to: commitEmail,
                     subject: "Build Passed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                    body: "Build passed successfully... <br>Details: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a>",
+                    body: "Build passed successfully. <br>Details: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a>",
                     mimeType: 'text/html'
                 )
             }
