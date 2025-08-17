@@ -2,6 +2,8 @@ pipeline {
     agent any
 
     stages {
+
+
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/RichardBenjamin/Jenkins_Upgradev3.git'
@@ -10,9 +12,18 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+               dir('maven-samples/single-module') { 
+                  sh 'mvn clean install'
             }
         }
+        }
+
+        stage('Debug Workspace') {
+            steps {
+                  sh 'pwd'
+                  sh 'ls -la'
+            }
+         }
 
         stage('Test') {
             steps {
