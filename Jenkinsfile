@@ -53,25 +53,32 @@ pipeline {
     }
 
     post {
-
-         def commitEmail = sh(script: 'git log -1 --pretty=%ae', returnStdout: true).trim()
-        
         failure {
-            emailext(
-                to: commitEmail,
-                subject: " Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """Build failed for commit ${env.GIT_COMMIT}.
-                         <br>Check logs: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a>""",
-                mimeType: 'text/html'
-            )
+            script {
+                // Get the committer's email from the most recent commit
+                def commitEmail = sh(script: 'git log -1 --pretty=%ae', returnStdout: true).trim()
+                
+                emailext(
+                    to: commitEmail,
+                    subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """Build failed for commit ${env.GIT_COMMIT}.
+                             <br>Check logs: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a>""",
+                    mimeType: 'text/html'
+                )
+            }
         }
         success {
-            emailext(
-                to: commitEmail,
-                subject: " Build Passed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "Build passed successfully 🎉 <br>Details: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a>",
-                mimeType: 'text/html'
-            )
+            script {
+                // Get the committer's email from the most recent commit
+                def commitEmail = sh(script: 'git log -1 --pretty=%ae', returnStdout: true).trim()
+                
+                emailext(
+                    to: commitEmail,
+                    subject: "Build Passed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: "Build passed successfully 🎉 <br>Details: <a href='${env.BUILD_URL}'>${env.BUILD_URL}</a>",
+                    mimeType: 'text/html'
+                )
+            }
         }
     }
 }
