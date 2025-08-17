@@ -48,7 +48,7 @@ pipeline {
                 emailext(
                     to: commitEmail,
                     subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                    body: """Build failed for commit ${env.GIT_COMMIT}.
+                    body: """Build failed for commit: ${env.GIT_COMMIT}.
                              <br>Check logs: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a>""",
                     mimeType: 'text/html'
                 )
