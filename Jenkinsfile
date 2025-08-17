@@ -33,6 +33,12 @@ pipeline {
             }
         }
 
+        stage('Archive Test Reports') {
+            steps {
+                junit 'maven-samples/single-module/target/surefire-reports/*.xml'  
+            }
+        }
+
         stage('Archive Artifact') {
             steps {
                 archiveArtifacts artifacts: 'maven-samples/single-module/target/*.jar', fingerprint: true
