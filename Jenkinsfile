@@ -28,8 +28,14 @@ pipeline {
         stage('Test') {
             steps {
                dir('maven-samples/single-module') { 
-                  sh 'mvn clean install'
+                  sh 'mvn test'
             }
+            }
+        }
+
+        stage('Archive Artifact') {
+            steps {
+                archiveArtifacts artifacts: 'maven-samples/single-module/target/*.jar', fingerprint: true
             }
         }
     }
