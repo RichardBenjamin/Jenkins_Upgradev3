@@ -1,26 +1,32 @@
 pipeline {
-      agent any
-      stages {
-            stage('Init') {
-                  steps {
-                        echo 'Hi, this is Anshul from LevelUp360'
-                        echo 'We are Starting the Testing'
-                  }
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/RichardBenjamin/Jenkins_Upgradev3.git'
             }
-            stage('Build') {
-                  steps {
-                        echo 'Building Sample Maven Project'
-                  }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
             }
-            stage('Deploy') {
-                  steps {
-                        echo "Deploying in Staging Area"
-                  }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
             }
-            stage('Deploy Production') {
-                  steps {
-                        echo "Deploying in Production Area"
-                  }
-            }
-      }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build and Tests successful!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
 }
