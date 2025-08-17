@@ -16,7 +16,9 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+               dir('Jenkins_Upgradev3/maven-samples/single-module') { 
+                  sh 'mvn clean install'
+            }
             }
         }
     }
