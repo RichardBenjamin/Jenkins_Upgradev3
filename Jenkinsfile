@@ -18,13 +18,6 @@ pipeline {
         }
         }
 
-        stage('Debug Workspace') {
-            steps {
-                  sh 'pwd'
-                  sh 'ls -la'
-            }
-         }
-
         stage('Test') {
             steps {
                dir('maven-samples/single-module') { 
