@@ -1,9 +1,16 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven3'   // configure Maven in Jenkins > Global Tool Configuration
+        jdk 'JDK11'      // configure JDK as well
+    }
+
+    environment {
+        SONAR_TOKEN = credentials('Sonar-cloud')  // SonarCloud token stored in Jenkins
+    }
+
     stages {
-
-
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/RichardBenjamin/Jenkins_Upgradev3.git'
@@ -12,30 +19,66 @@ pipeline {
 
         stage('Build') {
             steps {
-               dir('maven-samples/single-module') { 
-                  sh 'mvn clean install'
+                dir('maven-samples/single-module') {
+                    sh 'mvn clean install'
+                }
             }
-        }
         }
 
         stage('Test') {
             steps {
-               dir('maven-samples/single-module') { 
-                  sh 'mvn test'
-            }
+                dir('maven-samples/single-module') {
+                    sh 'mvn test'
+                }
             }
         }
 
         stage('Archive Test Reports') {
             steps {
-                junit 'maven-samples/single-module/target/surefire-reports/*.xml'  
+                junit 'maven-samples/single-module/target/surefire-reports/*.xml'
             }
         }
 
+        stage('SonarCloud Analysis') {
+            steps {
+                dir('maven-samples/single-module') {
+                    withSonarQubeEnv('SonarCloud') {
+                        sh """
+                            mvn sonar:sonar \
+                              -Dsonar.projectKey=your_project_key \
+                              -Dsonar.organization=your_org \
+                              -Dsonar.host.url=https://sonarcloud.io \
+                              -Dsonar.login=$SONAR_TOKEN
+                        """
+                    }
+                }
+            }
+        }
+
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Dependency Check (OWASP)') {
+            steps {
+                dir('maven-samples/single-module') {
+                    sh """
+                        mvn org.owasp:dependency-check-maven:check \
+                          -Dformat=ALL \
+                          -DoutputDirectory=target/dependency-check-report
+                    """
+                }
+            }
+        }
 
         stage('Archive Artifact') {
             steps {
                 archiveArtifacts artifacts: 'maven-samples/single-module/target/*.jar', fingerprint: true
+                archiveArtifacts artifacts: 'maven-samples/single-module/target/dependency-check-report/*.*', fingerprint: true
             }
         }
     }
@@ -44,7 +87,7 @@ pipeline {
         failure {
             script {
                 def commitEmail = sh(script: 'git log -1 --pretty=%ae', returnStdout: true).trim()
-                
+
                 emailext(
                     to: commitEmail,
                     subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -57,7 +100,7 @@ pipeline {
         success {
             script {
                 def commitEmail = sh(script: 'git log -1 --pretty=%ae', returnStdout: true).trim()
-                
+
                 emailext(
                     to: commitEmail,
                     subject: "Build Passed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
