@@ -51,7 +51,8 @@ pipeline {
                               -Dsonar.projectKey=RichardBenjamin_Jenkins_Upgradev3 \
                               -Dsonar.organization=richardbenjamin \
                               -Dsonar.host.url=https://sonarcloud.io \
-                              -Dsonar.login=$SONAR_TOKEN
+                              -Dsonar.token=$SONAR_TOKEN
+                              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml'
                         """
                     }
                 }
