@@ -8,15 +8,14 @@ pipeline {
 
     environment {
         SONAR_TOKEN = credentials('Sonar-cloud')  // SonarCloud token stored in Jenkins
+        COMMIT_EMAIL = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'").trim()
     }
 
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/RichardBenjamin/Jenkins_Upgradev3.git'
-                script {
-                    COMMIT_EMAIL = sh(script: 'git log -1 --pretty=%ae', returnStdout: true).trim()
-                }
+                echo "Commit email is: ${COMMIT_EMAIL}"
             }
         }
 
