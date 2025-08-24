@@ -48,8 +48,8 @@ pipeline {
                     withSonarQubeEnv('SonarCloud') {
                         sh """
                             mvn sonar:sonar \
-                              -Dsonar.projectKey=your_project_key \
-                              -Dsonar.organization=your_org \
+                              -Dsonar.projectKey=RichardBenjamin_Jenkins_Upgradev3 \
+                              -Dsonar.organization=richardbenjamin \
                               -Dsonar.host.url=https://sonarcloud.io \
                               -Dsonar.login=$SONAR_TOKEN
                         """
