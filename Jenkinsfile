@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        SONAR_TOKEN = credentials('Sonar-cloud')  // SonarCloud token stored in Jenkins
+        SONAR_TOKEN = credentials('testing')  // SonarCloud token stored in Jenkins
         COMMIT_EMAIL = sh(returnStdout: true, script: "git log -1 --pretty=format:'%ae'").trim()
     }
 
@@ -45,7 +45,7 @@ pipeline {
         stage('SonarCloud Analysis') {
             steps {
                 dir('maven-samples/single-module') {
-                    withSonarQubeEnv('SonarCloud') {
+                    withSonarQubeEnv('testing') {
                         sh """
                             mvn sonar:sonar \
                               -Dsonar.projectKey=RichardBenjamin_Jenkins_Upgradev3 \
