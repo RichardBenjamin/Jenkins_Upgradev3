@@ -20,19 +20,16 @@ pipeline {
         }
 
 
+    stages {
         stage('Build') {
             steps {
-                dir('maven-samples/single-module') {
-                    sh 'mvn clean install'
-                }
+                sh 'mvn clean install -DskipTests'
             }
         }
 
-        stage('Test') {
+        stage('Test with Coverage') {
             steps {
-                dir('maven-samples/single-module') {
-                    sh 'mvn test'
-                }
+                sh 'mvn clean verify'
             }
         }
 
