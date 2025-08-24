@@ -14,11 +14,12 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/RichardBenjamin/Jenkins_Upgradev3.git'
-            }
-            script {
+                script {
                     COMMIT_EMAIL = sh(script: 'git log -1 --pretty=%ae', returnStdout: true).trim()
+                }
             }
         }
+
 
         stage('Build') {
             steps {
