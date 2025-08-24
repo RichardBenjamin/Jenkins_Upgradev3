@@ -45,7 +45,7 @@ pipeline {
         stage('SonarCloud Analysis') {
             steps {
                 dir('maven-samples/single-module') {
-                    withSonarQubeEnv('testing') {
+                    withSonarQubeEnv('SonarQube') {
                         sh """
                             mvn sonar:sonar \
                               -Dsonar.projectKey=RichardBenjamin_Jenkins_Upgradev3 \
